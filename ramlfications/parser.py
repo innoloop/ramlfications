@@ -663,11 +663,12 @@ def create_resources(node, resources, root, parent):
             avail = _get(root.config, "http_optional")
             methods = [m for m in avail if m in list(iterkeys(v))]
             if "type" in list(iterkeys(v)):
-                assigned = _resource_type_lookup(_get(v, "type"), root)
-                if hasattr(assigned, "method"):
-                    if not assigned.optional:
-                        methods.append(assigned.method)
-                        methods = list(set(methods))
+                assigned = _resource_type_lookup(_get(v, "type"), root) or []
+                for a in assigned:
+                    if hasattr(a, "method"):
+                        if not a.optional:
+                            methods.append(a.method)
+                            methods = list(set(methods))
             if methods:
                 for m in methods:
                     child = create_node(name=k,
@@ -675,6 +676,7 @@ def create_resources(node, resources, root, parent):
                                         method=m,
                                         parent=parent,
                                         root=root)
+
                     resources.append(child)
             # inherit resource type methods
             elif "type" in list(iterkeys(v)):
@@ -999,6 +1001,8 @@ def create_node(name, raw_data, method, parent, root):
         except AttributeError:
             if type_():
                 assigned = _resource_type_lookup(type_(), root)
+                if assigned is not None:
+                    assigned = assigned[0]
                 try:
                     if assigned.method == method:
                         desc = assigned.description.raw

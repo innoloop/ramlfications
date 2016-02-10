@@ -1261,3 +1261,24 @@ doner andouille cupim meatball. Porchetta hamburger filet mignon jerky flank, \
 meatball salami beef cow venison tail ball tip pork belly.</p>
 """
     assert api.documentation[0].content.html == markdown_html
+
+
+#####
+# Test multiple methods in included external resource
+#####
+@pytest.fixture(scope="session")
+def external_resource_with_multiple_methods():
+    raml_file = os.path.join(
+        EXAMPLES + "external_resource_with_multiple_methods.raml")
+    loaded_raml_file = load_file(raml_file)
+    config = setup_config(EXAMPLES + "test-config.ini")
+    return pw.parse_raml(loaded_raml_file, config)
+
+
+def test_external_resource_with_multiple_methods(
+        external_resource_with_multiple_methods):
+    api = external_resource_with_multiple_methods
+    external_resources = [r for r in api.resources if r.path == "/external"]
+    # Make sure the methods of the external resource were detected
+    for method in "get", "patch", "post":
+        assert method in [r.method for r in external_resources]

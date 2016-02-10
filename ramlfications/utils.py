@@ -204,7 +204,7 @@ def _resource_type_lookup(assigned, root):
     if res_types:
         res_type_obj = [r for r in res_types if r.name == assigned]
         if res_type_obj:
-            return res_type_obj[0]
+            return res_type_obj
 
 
 #####
