@@ -1916,3 +1916,20 @@ def test_parameterised_request_and_response_bodies(
         assert len(resource.responses) == 1
         assert len(resource.responses[0].body) == 1
         assert resource.responses[0].body[0].schema == resource_name
+
+        
+def repeated_parameter_transformation():
+    raml_file = os.path.join(
+        EXAMPLES + "repeated-parameter-transformation.raml")
+    config = setup_config(EXAMPLES + "test-config.ini")
+    loaded_raml_file = load_file(raml_file)
+    return pw.parse_raml(loaded_raml_file, config)
+
+
+def test_repeated_parameter_transformation(
+        repeated_parameter_transformation):
+    api = repeated_parameter_transformation
+    assert len(api.resources) == 2
+    get_resources = [r for r in api.resources if r.method == "get"]
+    for r in get_resources:
+        assert r.desc == "job job"
