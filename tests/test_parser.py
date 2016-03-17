@@ -1918,6 +1918,7 @@ def test_parameterised_request_and_response_bodies(
         assert resource.responses[0].body[0].schema == resource_name
 
         
+@pytest.fixture(scope="session")
 def repeated_parameter_transformation():
     raml_file = os.path.join(
         EXAMPLES + "repeated-parameter-transformation.raml")
